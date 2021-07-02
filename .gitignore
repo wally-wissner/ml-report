@@ -1,0 +1,7 @@
+# Local versioning and settings
+.DS_Store
+.ipython_checkpoints
+__pycache__/
+venv/
+*.idea
+*.pyc
