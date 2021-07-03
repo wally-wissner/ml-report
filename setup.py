@@ -19,9 +19,22 @@ setup(
     url="https://github.com/wally-wissner/ml_report",
     license=(here / 'LICENSE.txt').read_text(),
     install_requires=[
-        "setuptools",
+        "eli5 >= 0.11.0",
+        "dill >= 0.3.3",
+        "joblib >= 1.0.1",
+        "nltk >= 3.4",
+        "numpy >= 1.18.2",
+        "pandas >= 0.25.0",
+        "scikit-learn >= 0.24.1",
+        "setuptools >= 40.6.3",
+        "tqdm >= 4.28.1",
     ],
-    classiiers=[
+    extras_requires={
+        "dev": [
+            "pytest >= 3.7",
+        ]
+    },
+    classifiers=[
         'Development Status :: 2 - Pre-Alpha'
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
