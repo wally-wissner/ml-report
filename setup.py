@@ -53,5 +53,3 @@ setup(
     package_dir={'': "ml_report"},
     python_requires=">=3.7",
 )
-
-# test.pypi.org
