@@ -1,6 +1,6 @@
 # Purpose
 
-**ml_report** provides in-depth metrics and diagnostics reports while training Machine Learning models.
+**ml_report** is a Python module providing in-depth metrics and diagnostics for training and evaluating Machine Learning models.
 
 
 # Installation
