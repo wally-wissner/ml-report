@@ -23,7 +23,8 @@ setup(
     ],
     classiiers=[
         'Development Status :: 3 - Alpha',
-    ]
+    ],
+    package_dir={'': "ml_report"},
 )
 
 # test.pypi.org
