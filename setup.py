@@ -11,7 +11,7 @@ here = pathlib.Path(__file__).parent.resolve()
 setup(
     name="ml-report",
     version=__version__,
-    description="Automated reporting for training Machine Learning models",
+    description="Automated reporting for training and evaluating Machine Learning models",
     long_description=(here / "README.md").read_text(),
     long_description_content_type="text/markdown",
     author="Wally Wissner",
