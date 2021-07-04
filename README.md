@@ -5,5 +5,5 @@
 
 # Installation
 
-    pip install ml_report
+    pip install ml-report
 
