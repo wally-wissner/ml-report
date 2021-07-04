@@ -29,7 +29,7 @@ setup(
         "setuptools >= 40.6.3",
         "tqdm >= 4.28.1",
     ],
-    extras_requires={
+    extras_require={
         "dev": [
             "pytest >= 3.7",
         ]
