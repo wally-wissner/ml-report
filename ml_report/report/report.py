@@ -55,7 +55,7 @@ class Report(object):
         self.submetrics_df = None
 
         self.report_path = report_path
-        self.create_report_path()
+        self._create_report_path()
         self._save_args()
 
         if search_cv is not None:
@@ -72,33 +72,34 @@ class Report(object):
                 verbose=10,
             )
 
-    def detailed_report(self, *args, **kwargs):
-        pass  # TODO
-
     def fit(self, *args, **kwargs):
         self.search_cv.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
 
-    def _save_args(self):
-        with open(self._to_report_path("args.json"), "w+") as f:
-            json.dump(self.__dict__, f)
+    def detailed_report(self, *args, **kwargs):
+        pass  # TODO
+
+    def build_report(self, detailed=True, save=True):
+        df_metrics_report = metrics_report(self.search)
+
+        if save:
+            df_metrics_report.to_csv()
+
+    def _create_report_path(self):
+        if not os.path.exists(self.report_path):
+            os.makedirs(self.report_path)
+
+    def _prepend_report_path(self, path):
+        return join(self.report_path, path)
 
     def _save_model(self):
         # Pickle model.
         joblib.dump(self.search_cv, search_filename)
         joblib.dump(self.search_cv.best_estimator_, model_filename)
 
-    def build_report(self, save=True):
-        df_metrics_report = metrics_report(self.search)
+    def _save_args(self):
+        with open(self._prepend_report_path("args.json"), "w+") as f:
+            json.dump(self.__dict__, f)
 
-        if save:
-            df_metrics_report.to_csv()
-
-    def create_report_path(self):
-        if not os.path.exists(self.report_path):
-            os.makedirs(self.report_path)
-
-    def _to_report_path(self, path):
-        return join(self.report_path, path)
 
 
 # def load_report(report_path):
