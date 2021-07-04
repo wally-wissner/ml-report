@@ -9,7 +9,7 @@ here = pathlib.Path(__file__).parent.resolve()
 
 
 setup(
-    name="ml-report",
+    name="ml_report",
     version=__version__,
     description="Automated reporting for training and evaluating Machine Learning models",
     long_description=(here / "README.md").read_text(),
