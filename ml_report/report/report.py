@@ -78,11 +78,23 @@ class Report(object):
     def detailed_report(self, *args, **kwargs):
         pass  # TODO
 
-    def build_report(self, detailed=True, save=True):
+    def build_report(self, detailed_report=True, save=True):
         df_metrics_report = metrics_report(self.search)
 
         if save:
             df_metrics_report.to_csv()
+
+    def explain_model(self, save=True, *args, **kwargs):
+        df_explanation = explain_weights_df(self.m)
+        if save:
+            df_explanation.round(round).to_csv(self._prepend_report_path("model_explanation.csv"), index=False)
+        return df_explanation
+
+    def best_params(self, save=True, *args, **kwargs):
+        best_params = self.search.best_params_
+        with open(self._prepend_report_path("best_params.json"), "w+") as f:
+            json.dump(best_params, f)
+        return best_params
 
     def _create_report_path(self):
         if not os.path.exists(self.report_path):
@@ -91,7 +103,7 @@ class Report(object):
     def _prepend_report_path(self, path):
         return join(self.report_path, path)
 
-    def _save_model(self):
+    def _save_search(self):
         # Pickle model.
         joblib.dump(self.search_cv, search_filename)
         joblib.dump(self.search_cv.best_estimator_, model_filename)
@@ -107,62 +119,3 @@ class Report(object):
 #     # Load pickled model.
 #     report.search = joblib.load(search_filename)
 #     report.m = joblib.load(model_filename)
-
-#
-# def report(
-#     df: pd.DataFrame,
-#     iv: Union[Iterable[str], str],
-#     dv: Union[Iterable[str], str],
-#     estimator,
-#     param_grid,
-#     scorers,
-#     rebuild_model,
-#     search_cv: BaseSearchCV = GridSearchCV,
-#     n_jobs=1,
-#     n_splits=10,
-#     seed=0,
-#     report_path="model_reports",
-# ):
-#     search_filename = "search.pickle"
-#     model_filename = "model.pickle"
-#
-#     np.random.seed(seed)
-#
-#     if rebuild_model:
-#         search = search_cv(
-#             estimator=estimator,
-#             param_grid=param_grid,
-#             scoring=scorers,
-#             cv=n_splits,
-#             refit="r2",
-#             return_train_score=True,
-#             n_jobs=n_jobs,
-#             verbose=10,
-#         )
-#
-#         search.fit(X=df[iv], y=df[dv])
-#
-#         # Pickle model.
-#         joblib.dump(search, search_filename)
-#         joblib.dump(search.best_estimator_, model_filename)
-#         print("Model pickled.")
-#
-#     # Load pickled model.
-#     search = joblib.load(search_filename)
-#     m = joblib.load(model_filename)
-#
-#     # Create path to store reports.
-#     if not os.path.exists(report_path):
-#         os.makedirs(report_path)
-#
-#     with open(f"{report_path}/best_params.json", "w+") as f:
-#         json.dump(search.best_params_, f)
-#
-#     df_metrics = metrics_report(search)
-#     df_metrics.round(3).to_csv(f"{report_path}/metrics.csv", index=False)
-#
-#     explain_weights_df(m).round(3).to_csv(
-#         f"{report_path}/eli5_explanation.csv", index=False
-#     )
-#
-#     return search
