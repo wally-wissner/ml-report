@@ -26,7 +26,6 @@ setup(
         "numpy >= 1.18.2",
         "pandas >= 0.25.0",
         "scikit-learn >= 0.24.1",
-        "setuptools >= 40.6.3",
         "tqdm >= 4.28.1",
     ],
     extras_require={
