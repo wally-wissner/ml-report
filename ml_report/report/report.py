@@ -17,6 +17,8 @@ from ml_report.report.metrics_report import metrics_report
 _search_filename = "search.pickle"
 _model_filename = "model.pickle"
 _kwargs_filename = "kwargs.json"
+_model_explanation_filename = "model_explanation.csv"
+_best_params_filename = "best_params.json"
 
 
 class Report(object):
@@ -85,16 +87,17 @@ class Report(object):
         if save:
             df_metrics_report.to_csv()
 
-    def explain_model(self, save=True, roud=3, *args, **kwargs):
+    def explain_model(self, save=True, round=3, *args, **kwargs):
         df_explanation = explain_weights_df(self.m)
         if save:
-            df_explanation.round(round).to_csv(self._prepend_report_path("model_explanation.csv"), index=False)
+            df_explanation.round(round).to_csv(self._prepend_report_path(_model_explanation_filename), index=False)
         return df_explanation
 
     def best_params(self, save=True, *args, **kwargs):
         best_params = self.search.best_params_
-        with open(self._prepend_report_path("best_params.json"), 'w+') as f:
-            json.dump(best_params, f)
+        if save:
+            with open(self._prepend_report_path(_best_params_filename), 'w+') as f:
+                json.dump(best_params, f)
         return best_params
 
     def _create_report_path(self):
