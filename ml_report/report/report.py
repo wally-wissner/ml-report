@@ -78,13 +78,13 @@ class Report(object):
     def detailed_report(self, *args, **kwargs):
         pass  # TODO
 
-    def build_report(self, detailed_report=True, save=True):
+    def build_report(self, detailed_report=True, save=True, *args, **kwargs):
         df_metrics_report = metrics_report(self.search)
 
         if save:
             df_metrics_report.to_csv()
 
-    def explain_model(self, save=True, *args, **kwargs):
+    def explain_model(self, save=True, roud=3, *args, **kwargs):
         df_explanation = explain_weights_df(self.m)
         if save:
             df_explanation.round(round).to_csv(self._prepend_report_path("model_explanation.csv"), index=False)
@@ -104,18 +104,22 @@ class Report(object):
         return join(self.report_path, path)
 
     def _save_search(self):
-        # Pickle model.
         joblib.dump(self.search_cv, search_filename)
         joblib.dump(self.search_cv.best_estimator_, model_filename)
 
     def _save_args(self):
-        with open(self._prepend_report_path("args.json"), "w+") as f:
+        with open(self._prepend_report_path("kwargs.json"), "w+") as f:
             json.dump(self.__dict__, f)
 
 
+def load_report(report_path):
+    with open(join(report_path, "kwargs.json")) as f:
+        kwargs = json.load(f)
 
-# def load_report(report_path):
-#     report = Report()
-#     # Load pickled model.
-#     report.search = joblib.load(search_filename)
-#     report.m = joblib.load(model_filename)
+    report = Report(**kwargs)
+
+    # Load pickled model.
+    report.search = joblib.load(search_filename)
+    report.m = joblib.load(model_filename)
+
+    return report
