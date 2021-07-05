@@ -14,11 +14,11 @@ from typing import Iterable, Union
 from ml_report.report.metrics_report import metrics_report
 
 
-_search_filename = "search.pickle"
-_model_filename = "model.pickle"
-_kwargs_filename = "kwargs.json"
-_model_explanation_filename = "model_explanation.csv"
 _best_params_filename = "best_params.json"
+_kwargs_filename = "kwargs.json"
+_model_filename = "model.pickle"
+_model_explanation_filename = "model_explanation.csv"
+_search_filename = "search.pickle"
 
 
 class Report(object):
@@ -52,7 +52,7 @@ class Report(object):
         self.y_pred = None
 
         self.search = None
-        self.m = None
+        self.model = None
 
         self.metrics_df = None
         self.submetrics_df = None
@@ -78,6 +78,14 @@ class Report(object):
     def fit(self, *args, **kwargs):
         self.search_cv.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
 
+    def save_model(self):
+        joblib.dump(self.search_cv, _search_filename)
+        joblib.dump(self.search_cv.best_estimator_, _model_filename)
+
+    def load_model(self):
+        self.search = joblib.dump(self.search_cv, _search_filename)
+        self.model = joblib.dump(self.search_cv.best_estimator_, _model_filename)
+
     def detailed_report(self, *args, **kwargs):
         pass  # TODO
 
@@ -88,7 +96,7 @@ class Report(object):
             df_metrics_report.to_csv()
 
     def explain_model(self, save=True, round=3, *args, **kwargs):
-        df_explanation = explain_weights_df(self.m)
+        df_explanation = explain_weights_df(self.model)
         if save:
             df_explanation.round(round).to_csv(self._prepend_report_path(_model_explanation_filename), index=False)
         return df_explanation
@@ -107,10 +115,6 @@ class Report(object):
     def _prepend_report_path(self, path):
         return join(self.report_path, path)
 
-    def _save_search(self):
-        joblib.dump(self.search_cv, _search_filename)
-        joblib.dump(self.search_cv.best_estimator_, _model_filename)
-
     def _save_args(self):
         with open(self._prepend_report_path(_kwargs_filename), 'w+') as f:
             json.dump(self.__dict__, f)
@@ -121,9 +125,6 @@ def load_report(report_path):
         kwargs = json.load(f)
 
     report = Report(**kwargs)
-
-    # Load pickled model.
-    report.search = joblib.load(_search_filename)
-    report.m = joblib.load(_model_filename)
+    report.load_model()
 
     return report
