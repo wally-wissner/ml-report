@@ -14,8 +14,9 @@ from typing import Iterable, Union
 from ml_report.report.metrics_report import metrics_report
 
 
-search_filename = "search.pickle"
-model_filename = "model.pickle"
+_search_filename = "search.pickle"
+_model_filename = "model.pickle"
+_kwargs_filename = "kwargs.json"
 
 
 class Report(object):
@@ -92,7 +93,7 @@ class Report(object):
 
     def best_params(self, save=True, *args, **kwargs):
         best_params = self.search.best_params_
-        with open(self._prepend_report_path("best_params.json"), "w+") as f:
+        with open(self._prepend_report_path("best_params.json"), 'w+') as f:
             json.dump(best_params, f)
         return best_params
 
@@ -104,22 +105,22 @@ class Report(object):
         return join(self.report_path, path)
 
     def _save_search(self):
-        joblib.dump(self.search_cv, search_filename)
-        joblib.dump(self.search_cv.best_estimator_, model_filename)
+        joblib.dump(self.search_cv, _search_filename)
+        joblib.dump(self.search_cv.best_estimator_, _model_filename)
 
     def _save_args(self):
-        with open(self._prepend_report_path("kwargs.json"), "w+") as f:
+        with open(self._prepend_report_path(_kwargs_filename), 'w+') as f:
             json.dump(self.__dict__, f)
 
 
 def load_report(report_path):
-    with open(join(report_path, "kwargs.json")) as f:
+    with open(join(report_path, _kwargs_filename), 'r') as f:
         kwargs = json.load(f)
 
     report = Report(**kwargs)
 
     # Load pickled model.
-    report.search = joblib.load(search_filename)
-    report.m = joblib.load(model_filename)
+    report.search = joblib.load(_search_filename)
+    report.m = joblib.load(_model_filename)
 
     return report
