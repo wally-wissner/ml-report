@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Wally Wissner",
     author_email="wally.wissner.MS@gmail.com",
-    url="https://github.com/wally-wissner/ml-report",
+    url="https://github.com/wally-wissner/ml_report",
     license=(here / "LICENSE.txt").read_text(),
     install_requires=[
         "eli5 >= 0.11.0",
