@@ -10,6 +10,10 @@
 
 # Usage
 
+**ml-report** is designed to be powerful yet lightweight. 
+
+    from ml_report import Report
+
 
 
 # Examples

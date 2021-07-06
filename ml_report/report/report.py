@@ -26,37 +26,30 @@ _submetrics_report_filename = "submetrics.csv"
 class Report(object):
     def __init__(
         self,
-        estimator: Union[ClassifierMixin, RegressorMixin],
         search: BaseSearchCV,
-        param_grid,
         metrics=None,
         rebuild_model=True,
         report_path="ml_reports",
         *args,
         **kwargs,
     ):
-
-        self.estimator = estimator
-        self.param_grid = param_grid
-
         self.rebuild_model = rebuild_model
-        self.report_path = report_path
 
-        self.y_pred = None
+        self.metrics = metrics
+
+        self.report_path = report_path
+        self._create_report_path()
 
         self.search = search
         self.model = None
 
-        self.metrics_df = None
-        self.submetrics_df = None
-
-        self.report_path = report_path
-        self._create_report_path()
         self._save_kwargs()
 
         self.df = None
         self.iv = None
         self.dv = None
+
+        self.y_pred = None
 
     def fit(self, X=None, y=None, df=None, iv=None, dv=None, *args, **kwargs):
         input_Xy = all((X is not None, y is not None))
