@@ -28,13 +28,10 @@ class Report(object):
         self,
         search: BaseSearchCV,
         metrics=None,
-        rebuild_model=True,
         report_path="ml_reports",
         *args,
         **kwargs,
     ):
-        self.rebuild_model = rebuild_model
-
         self.metrics = metrics
 
         self.report_path = report_path
@@ -42,8 +39,6 @@ class Report(object):
 
         self.search = search
         self.model = None
-
-        self._save_kwargs()
 
         self.df = None
         self.iv = None
@@ -115,20 +110,3 @@ class Report(object):
 
     def _prepend_report_path(self, path):
         return join(self.report_path, path)
-
-    def _save_kwargs(self):
-        kwargs = {
-
-        }
-        with open(self._prepend_report_path(_kwargs_filename), 'w+') as f:
-            json.dump(kwargs, f)
-
-
-def load_report(report_path):
-    with open(join(report_path, _kwargs_filename), 'r') as f:
-        kwargs = json.load(f)
-
-    report = Report(**kwargs)
-    report.load_model()
-
-    return report
