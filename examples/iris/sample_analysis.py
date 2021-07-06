@@ -34,5 +34,12 @@ report.fit(
     dv="sepal width (cm)",
 )
 
+# report.fit(
+#     X=df[["sepal length (cm)", "petal length (cm)", "petal width (cm)"]],
+#     y=df["sepal width (cm)"],
+# )
+
+print(report.iv, report.dv)
+print(report.df)
 
 report.build_report()

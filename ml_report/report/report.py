@@ -51,9 +51,13 @@ class Report(object):
             self.dv = dv
             self.search.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
         if input_Xy:
+            target_name = "target"
             self.df = pd.concat([X, y], axis=1)
-            self.iv = X.columns
-            self.dv = ("dv" if len(y.shape) <= 1 else [f"dv_{i}" for i, _ in enumerate(y.shape[0])])
+            self.iv = list(X.columns)
+            if len(y.shape) <= 1:
+                self.dv = target_name
+            else:
+                self.dv = [f"{target_name}_{i}" for i, _ in enumerate(y.shape[0])]
             self.search.fit(X=X, y=y, *args, **kwargs)
 
         self.model = self.search.best_estimator_
