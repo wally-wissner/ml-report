@@ -1,21 +1,14 @@
-import dill as pickle
 import joblib
 import json
-import numpy as np
 import os
-import pandas as pd
 from eli5 import explain_weights_df
-from os.path import dirname, join
-from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from os.path import join
 from sklearn.model_selection._search import BaseSearchCV
-from sklearn.model_selection import cross_val_predict, GridSearchCV
-from typing import Iterable, Union
 
 from ml_report.report.metrics_report import metrics_report
 
 
 _best_params_filename = "best_params.json"
-_kwargs_filename = "kwargs.json"
 _metrics_report_filename = "metrics.csv"
 _model_filename = "model.pickle"
 _model_explanation_filename = "model_explanation.csv"
