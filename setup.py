@@ -34,7 +34,6 @@ setup(
         ]
     },
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha" "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
         "Operating System :: MacOS",
