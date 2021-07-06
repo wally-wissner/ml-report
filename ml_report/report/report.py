@@ -31,7 +31,7 @@ class Report(object):
         param_grid,
         metrics=None,
         rebuild_model=True,
-        report_path="ml_report",
+        report_path="ml_reports",
         *args,
         **kwargs,
     ):
