@@ -2,7 +2,7 @@ import pathlib
 from setuptools import setup
 
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -37,13 +37,16 @@ setup(
         "Development Status :: 2 - Pre-Alpha" "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
+        "Operating System :: MacOS",
+        "Operating System :: Microsoft",
+        "Operating System :: OS Independent",
+        "Operating System :: Unix",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3 :: Only",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Software Development",

@@ -6,7 +6,7 @@ import os
 import pandas as pd
 from eli5 import explain_weights_df
 from os.path import dirname, join
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.model_selection._search import BaseSearchCV
 from sklearn.model_selection import cross_val_predict, GridSearchCV
 from typing import Iterable, Union
@@ -16,42 +16,35 @@ from ml_report.report.metrics_report import metrics_report
 
 _best_params_filename = "best_params.json"
 _kwargs_filename = "kwargs.json"
+_metrics_report_filename = "metrics.csv"
 _model_filename = "model.pickle"
 _model_explanation_filename = "model_explanation.csv"
 _search_filename = "search.pickle"
+_submetrics_report_filename = "submetrics.csv"
 
 
 class Report(object):
     def __init__(
         self,
-        estimator,
+        estimator: Union[ClassifierMixin, RegressorMixin],
+        search: BaseSearchCV,
         param_grid,
-        df: pd.DataFrame,
-        iv: Union[Iterable[str], str],
-        dv: Union[Iterable[str], str],
-        optimization_metric,
         metrics=None,
-        scorers=None,
-        search_cv: BaseSearchCV = None,
         rebuild_model=True,
-        report_path="ml_reports",
+        report_path="ml_report",
         *args,
         **kwargs,
     ):
 
         self.estimator = estimator
-        self.df = df
-        self.iv = iv
-        self.dv = dv
         self.param_grid = param_grid
 
         self.rebuild_model = rebuild_model
         self.report_path = report_path
 
-        self.search_cv = search_cv
         self.y_pred = None
 
-        self.search = None
+        self.search = search
         self.model = None
 
         self.metrics_df = None
@@ -59,49 +52,64 @@ class Report(object):
 
         self.report_path = report_path
         self._create_report_path()
-        self._save_args()
+        self._save_kwargs()
 
-        if search_cv is not None:
-            self.search_cv = search_cv
-        else:
-            self.search_cv = GridSearchCV(
-                estimator=self.estimator,
-                param_grid=param_grid,
-                scoring=scorers,
-                # cv=n_splits,
-                refit="r2",
-                return_train_score=True,
-                # n_jobs=n_jobs,
-                verbose=10,
-            )
+        self.df = None
+        self.iv = None
+        self.dv = None
 
-    def fit(self, *args, **kwargs):
-        self.search_cv.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
+    def fit(self, X=None, y=None, df=None, iv=None, dv=None, *args, **kwargs):
+        input_Xy = all((X is not None, y is not None))
+        input_df = all((df is not None, iv is not None, dv is not None))
+        assert input_Xy ^ input_df
+        if input_df:
+            self.df = df
+            self.iv = iv
+            self.dv = dv
+        if input_Xy:
+            # TODO
+            self.iv = X.columns
+
+        self.search.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
+        self.model = self.search.best_estimator_
 
     def save_model(self):
-        joblib.dump(self.search_cv, _search_filename)
-        joblib.dump(self.search_cv.best_estimator_, _model_filename)
+        joblib.dump(self.search, _search_filename)
+        joblib.dump(self.model, _model_filename)
 
     def load_model(self):
-        self.search = joblib.dump(self.search_cv, _search_filename)
-        self.model = joblib.dump(self.search_cv.best_estimator_, _model_filename)
+        self.search = joblib.load(_search_filename)
+        self.model = joblib.load(_model_filename)
 
     def detailed_report(self, *args, **kwargs):
         pass  # TODO
 
     def build_report(self, detailed_report=True, save=True, *args, **kwargs):
+        self.best_params(save=True)
+        self.explain_model(save=True)
+        self.metrics_report(save=True, round=3)
+
+    def metrics_report(self, save=False, round=3):
         df_metrics_report = metrics_report(self.search)
-
         if save:
-            df_metrics_report.to_csv()
+            df_metrics_report.round(round).to_csv(self._prepend_report_path(_metrics_report_filename), index=False)
+        return df_metrics_report
 
-    def explain_model(self, save=True, round=3, *args, **kwargs):
+    def submetrics_report(self, columns=None, save=False, round=3):
+        # TODO:
+        pass
+        # df_submetrics_report =
+        # if save:
+        #     df_submetrics_report.round(round).to_csv(self._prepend_report_path(_submetrics_report_filename), index=False)
+        # return df_submetrics_report
+
+    def explain_model(self, save=False, round=3, *args, **kwargs):
         df_explanation = explain_weights_df(self.model)
         if save:
             df_explanation.round(round).to_csv(self._prepend_report_path(_model_explanation_filename), index=False)
         return df_explanation
 
-    def best_params(self, save=True, *args, **kwargs):
+    def best_params(self, save=False, *args, **kwargs):
         best_params = self.search.best_params_
         if save:
             with open(self._prepend_report_path(_best_params_filename), 'w+') as f:
@@ -115,9 +123,12 @@ class Report(object):
     def _prepend_report_path(self, path):
         return join(self.report_path, path)
 
-    def _save_args(self):
+    def _save_kwargs(self):
+        kwargs = {
+
+        }
         with open(self._prepend_report_path(_kwargs_filename), 'w+') as f:
-            json.dump(self.__dict__, f)
+            json.dump(kwargs, f)
 
 
 def load_report(report_path):

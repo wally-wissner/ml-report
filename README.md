@@ -7,3 +7,14 @@
 
     pip install ml-report
 
+
+# Usage
+
+
+
+# Examples
+
+    from ml_report import Report
+
+
+    report = Report()
