@@ -53,7 +53,7 @@ class Report(object):
         if input_Xy:
             self.df = pd.concat([X, y], axis=1)
             self.iv = X.columns
-            self.dv = ("dv" if len(y.shape) < 2 else [f"dv_{i}" for i, _ in enumerate(y.shape[1])])
+            self.dv = ("dv" if len(y.shape) <= 1 else [f"dv_{i}" for i, _ in enumerate(y.shape[0])])
             self.search.fit(X=X, y=y, *args, **kwargs)
 
         self.model = self.search.best_estimator_
