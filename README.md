@@ -26,12 +26,18 @@
     }
     report = Report(
         estimator=ElasticNet(),
-        search=GridSearchCV(estimator=ElasticNet(), param_grid=param_grid, scoring="r2"),
+        search=GridSearchCV(
+            estimator=ElasticNet(),
+            param_grid=param_grid,
+            scoring={"r2": "r2"},
+            refit="r2", cv=5,
+            return_train_score=True,
+        ),
         param_grid=param_grid,
     )
     report.fit(
         df=df,
-        iv=["sepal length (cm)", "sepal width (cm)", "petal length (cm)"],
-        dv="petal width (cm)",
+        iv=["sepal length (cm)", "petal length (cm)", "petal width (cm)"],
+        dv="sepal width (cm)",
     )
     report.build_report()
