@@ -45,3 +45,4 @@
         dv="sepal width (cm)",
     )
     report.build_report()
+    report.save_model()
