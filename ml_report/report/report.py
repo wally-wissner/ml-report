@@ -1,6 +1,8 @@
 import joblib
 import json
 import os
+
+import pandas as pd
 from eli5 import explain_weights_df
 from os.path import join
 from sklearn.model_selection._search import BaseSearchCV
@@ -47,11 +49,13 @@ class Report(object):
             self.df = df
             self.iv = iv
             self.dv = dv
+            self.search.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
         if input_Xy:
-            # TODO
+            self.df = pd.concat([X, y], axis=1)
             self.iv = X.columns
+            self.dv = ("dv" if len(y.shape) < 2 else [f"dv_{i}" for i, _ in enumerate(y.shape[1])])
+            self.search.fit(X=X, y=y, *args, **kwargs)
 
-        self.search.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
         self.model = self.search.best_estimator_
 
         if save:
@@ -71,7 +75,7 @@ class Report(object):
     def build_report(self, detailed_report=True, save=True, *args, **kwargs):
         self.best_params(save=True)
         self.explain_model(save=True)
-        self.metrics_report(save=True, round=3)
+        self.metrics_report(save=True)
 
     def metrics_report(self, save=False, round=3):
         df_metrics_report = metrics_report(self.search)
