@@ -39,7 +39,7 @@ class Report(object):
 
         self.y_pred = None
 
-    def fit(self, X=None, y=None, df=None, iv=None, dv=None, *args, **kwargs):
+    def fit(self, X=None, y=None, df=None, iv=None, dv=None, save=True, *args, **kwargs):
         input_Xy = all((X is not None, y is not None))
         input_df = all((df is not None, iv is not None, dv is not None))
         assert input_Xy ^ input_df
@@ -54,13 +54,16 @@ class Report(object):
         self.search.fit(X=self.df[self.iv], y=self.df[self.dv], *args, **kwargs)
         self.model = self.search.best_estimator_
 
+        if save:
+            self.save_model()
+
     def save_model(self):
-        joblib.dump(self.search, _search_filename)
-        joblib.dump(self.model, _model_filename)
+        joblib.dump(self.search, self._prepend_report_path(_search_filename))
+        joblib.dump(self.model, self._prepend_report_path(_model_filename))
 
     def load_model(self):
-        self.search = joblib.load(_search_filename)
-        self.model = joblib.load(_model_filename)
+        self.search = joblib.load(self._prepend_report_path(_search_filename))
+        self.model = joblib.load(self._prepend_report_path(_model_filename))
 
     def detailed_report(self, *args, **kwargs):
         pass  # TODO
