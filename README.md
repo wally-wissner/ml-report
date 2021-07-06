@@ -28,15 +28,16 @@
         "alpha": [1, 10, 100],
         "l1_ratio": [.25, .5, .75],
     }
+    search = GridSearchCV(
+        estimator=ElasticNet(),
+        param_grid=param_grid,
+        scoring={"r2": "r2"},
+        refit="r2", cv=5,
+        return_train_score=True,
+    )
     report = Report(
         estimator=ElasticNet(),
-        search=GridSearchCV(
-            estimator=ElasticNet(),
-            param_grid=param_grid,
-            scoring={"r2": "r2"},
-            refit="r2", cv=5,
-            return_train_score=True,
-        ),
+        search=search,
         param_grid=param_grid,
     )
     report.fit(
